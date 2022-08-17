@@ -1,0 +1,45 @@
+{
+  "items": [
+    {
+      "id": "1",
+      "name": "MacBook Pro 13",
+      "images": "../images/macbookPro13.png",
+      "count": 1,
+      "price": "$ 1,200.00 USD",
+      "description": "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet"
+    },
+    {
+      "id": "2",
+      "name": "Smart Galaxy Watch 3",
+      "images": "../assets/images/smartGalaxyWatch3.png",
+      "count": 1,
+      "price": "$ 199.00 USD",
+      "description": "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit..."
+    },
+    {
+      "id": "3",
+      "name": "MacBook Air M1",
+      "images": "../assets/images/macbookAirM1.png",
+      "count": 1,
+      "price": "$ 1,009.00 USD",
+      "description": "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit..."
+    },
+    {
+      "id": "4",
+      "name": "iPad",
+      "images": "../assets/images/iPad1.png",
+      "count": 1,
+      "price": "$ 610.00 USD",
+      "description": "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit..."
+    }
+  ],
+  "cart": [
+    {
+      "id": "2",
+      "name": "Smart Galaxy Watch 3",
+      "price": "$ 199.00 USD",
+      "images": "http://127.0.0.1:59113/assets/images/smartGalaxyWatch3.png",
+      "count": 1
+    }
+  ]
+}
