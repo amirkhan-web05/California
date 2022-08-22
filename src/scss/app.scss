@@ -7,6 +7,12 @@ body {
   background: #fdfdfd;
 }
 
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
 h1,h2,h3,h4,h5,h6 {
   margin: 0;
   padding: 0;
@@ -87,6 +93,36 @@ h1,h2,h3,h4,h5,h6 {
   box-shadow: 1px 1px 6px 0px rgba(34, 60, 80, 0.2);
   border: 1px solid #ccc;
 
+  &__remove {
+    cursor: pointer;
+  }
+
+  &__empty {
+    display: block;
+    text-align: center;
+    font-family: $ReadexProRegular;
+  }
+
+  &__total-item {
+    margin-top: 10px;
+  }
+
+  &__plus {
+    background-color: transparent;
+    font-size: 16px;
+    border-radius: 5px;
+    padding: 3px 8px;
+    cursor: pointer;
+  }
+
+  &__minus {
+    background-color: transparent;
+    font-size: 16px;
+    border-radius: 5px;
+    padding: 3px 10px;
+    cursor: pointer;
+  }
+
   &__inner {
     padding: 15px;
     height: 100%;
@@ -96,12 +132,15 @@ h1,h2,h3,h4,h5,h6 {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 20px;
 
     &-row {
       display: flex;
 
       div {
-        margin-top: 20px;
+        &:first-child {
+          margin-top: 20px;
+        }
       }
     }
   }
@@ -156,7 +195,6 @@ h1,h2,h3,h4,h5,h6 {
   margin-top: 28px;
 
   &__inner {
-    width: 500px;
     position: relative;
     z-index: 1000;
     background: #DCE5E2;
@@ -167,9 +205,14 @@ h1,h2,h3,h4,h5,h6 {
     border-radius: 50px;
   }
 
+  &__images {
+    position: relative;
+    top:3px;
+  }
+
   &__info {
-    width: 550px;
     padding-left: 40px;
+    width: 630px;
 
     &-title {
       font-size: 58px;
@@ -196,41 +239,6 @@ h1,h2,h3,h4,h5,h6 {
   }
 }
 
-
-
-.swiper-slide {
-  width: 1263px;
-  height: 100%;
-  display: block;
-  position: relative;
-  z-index: 1000;
-  background: #DCE5E2;
-  display: flex;
-  align-items: center;
-  margin: 0 -50px;
-  // justify-content: space-between;
-
-  
-  img {
-    margin-right: 66px;
-  }
-}
-
-.swiper-button-next, .swiper-button-prev {
-  width: 24px !important;
-  height: 26px;
-}
-
-
-.swiper-pagination {
-  position: relative;
-  left: 30% !important;
-  width: 194px !important;
-}
-
-.swiper-pagination-active {
-  height: 50px !important;
-}
 
 .shop {
   width: 100%;
@@ -428,7 +436,6 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 .details {
-  margin-top: 80px;
 
   &__name {
     font-size: 40px;

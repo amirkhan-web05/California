@@ -1,56 +1,81 @@
+import iconRemove from '../assets/images/delete-icon.svg';
+
 window.addEventListener('DOMContentLoaded', () => {
-  // const swiper = new Swiper('.block', {
-  //   navigation: {
-  //     nextEl: '.swiper-button-next',
-  //     prevEl: '.swiper-button-prev',
-  //   },
-  //   pagination: {
-  //     el: '.swiper-pagination',
-  //   },
-  // });
+  const element = (tag, classes, id, content, set) => {
+    const node = document.createElement(tag);
+    if (classes.length) {
+      node.classList.add(...classes);
+    }
 
-  const cartEl = document.querySelector('.header__data-cart');
-  const cart = document.querySelector('.cart');
-  const cardList = document.querySelector('.card__items');
-  const cartList = document.querySelector('.cart__inner');
-  const details = document.querySelector('.details');
-  const detailsName = document.querySelector('.details__test');
+    if (id) {
+      node.id = id;
+    }
 
-  console.log(detailsName);
+    if (content) {
+      node.textContent = content;
+    }
+
+    if (set) {
+      node.dataset.button = set;
+    }
+
+    return node;
+  };
+
+  const selector = (tag) => document.querySelector(tag);
+
+  const cartEl = selector('.header__data-cart');
+  const cart = selector('.cart');
+  const cardList = selector('.card__items');
+  const cartList = selector('.cart__inner');
+  const details = selector('.details');
+  const cartTotal = selector('#cartTotal');
 
   let hash = location.hash.substring(1);
 
-  const openCart = () => {
-    if (cart.classList.contains('cart')) {
-      cart.classList.toggle('active');
+  cartEl.addEventListener('click', () => {
+    cart.addEventListener('click', (event) => {
+      event.stopPropagation();
+    });
+
+    cart.classList.toggle('active');
+  });
+
+  window.addEventListener('click', (event) => {
+    if (event.target !== cartEl) {
+      cart.classList.remove('active');
     }
-  };
-
-  cartEl.addEventListener('click', openCart);
-
-  const requestUrlItems = 'http://localhost:3001/items';
-  const requestUrlCart = 'http://localhost:3001/cart';
+  });
 
   let cartData = [];
 
-  const renderCard = ({ id, name, images, description, price }) => {
-    const cardItem = document.createElement('div');
-    cardItem.classList.add('card__item');
-    cardItem.id = id;
+  const methods = {
+    items: 'http://localhost:3001/items',
+    cart: 'http://localhost:3001/cart',
+  };
 
-    cardItem.innerHTML = `
-        <img class='card__images' width=${250} src="${images}" alt="${name}">
-        <a href="../details.html#${id}">
-          <h3 class='card__name'>${name}</h3>
-        </a>
-        <div>
-          <p class='card__description'>${description}</p>
-          <span class='card__price'>${price}</span>
-          <button data-id='add' class='card__btn'>Добавить в корзину</button>
-        </div>
-      `;
+  const checkEmplyCart = (data) => {
+    if (!data.length) {
+      const cartEmpty = element('h3', ['cart__empty']);
+      cartEmpty.innerHTML = 'Корзина пустая';
 
-    cardList.insertAdjacentElement('beforeend', cardItem);
+      cartList.insertAdjacentElement('beforeend', cartEmpty);
+    }
+  };
+
+  const updateCartTotal = () => {
+    const total = cartData.reduce((acc, item) => {
+      const clearPrice = item.price.trim().substring(1, 9);
+      const price = parseFloat(clearPrice);
+      return (acc += price && item.count * price);
+    }, 0);
+
+    cartTotal.innerHTML = `
+      <div>
+        <h3>Итого:</h3>
+        <strong class="cart__total">$ ${total.toFixed(2)} USD</strong>
+      </div>`;
+    cartList.append(cartTotal);
   };
 
   const fetchData = async (url) => {
@@ -66,13 +91,31 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const renderCard = ({ id, name, images, description, price }) => {
+    const cardItem = element('div', ['card__item'], id);
+
+    cardItem.innerHTML = `
+        <img class='card__images' width="200" src="${images}" alt="${name}">
+        <a href="../details.html#${id}">
+          <h3 class='card__name'>${name}</h3>
+        </a>
+        <div>
+          <p class='card__description'>${description}</p>
+          <span class='card__price'>$ ${Number(price).toFixed(2)} USD</span>
+          <button data-id='add' class='card__btn'>Добавить в корзину</button>
+        </div>
+      `;
+
+    cardList.insertAdjacentElement('beforeend', cardItem);
+  };
+
   const getDataPage = async (callback, prop, value) => {
     try {
-      await fetchData(requestUrlItems).then((data) => {
+      await fetchData(methods.items).then((data) => {
         if (value) {
           callback(data.filter((item) => item[prop] === value));
         } else {
-          callback(data);
+          return data.forEach((item) => renderCard(item));
         }
       });
     } catch (error) {
@@ -80,21 +123,19 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  fetchData(requestUrlItems).then((data) =>
-    data.forEach((item) => renderCard(item))
-  );
-
   const renderDetailsPage = (data) => {
     data.forEach((item) => {
       details.insertAdjacentHTML(
         'beforeend',
         `
         <div class='container'>
-          <h1 class='details__name'>${item.name}</h1>
-          <p class='details__price'>${item.price}</p>
-          <span class='details__description'>${item.description}</span>
-          <div>
-            <button data-id='add' class='details__add'>Добавить в корзину</button>
+          <div id=${item.id} class='details__item'>
+            <img class='details__image' src="${
+              item.images
+            }" width="340" height="260">
+            <h1 class='details__name'>${item.name}</h1>
+            <p class='details__price'>$ ${Number(item.price).toFixed(2)} USD</p>
+            <span class='details__description'>${item.description}</span>
           </div>
         </div>
       `
@@ -102,53 +143,45 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  getDataPage(renderDetailsPage, 'id', hash);
-
   window.addEventListener('hashchange', () => {
     hash = location.hash.substring(1);
   });
 
-  const renderCart = (data) => {
-    cartList.innerHTML = '';
-
-    data.forEach((item) => {
-      const cartItem = document.createElement('li');
-      cartItem.id = item.id;
-      cartItem.classList.add('cart__item');
-
-      cartItem.innerHTML = `
-        <div class="cart__item-row">
-          <img width="120" height="120" src="${item.images}" alt="">
-          <div>
-            <span class="cart__title">${item.name}</span>
-            <p class="cart__price">${item.price}</p>
-          </div>
-        </div>
-        <div>
-          <img class='cart__remove' data-id='remove' width="25" height="25" src="../assets/images/delete-icon.svg" alt="">
-        </div>
-      `;
-
-      cartList.insertAdjacentElement('beforeend', cartItem);
-    });
-
-    return data;
-  };
-
-  const fetchCart = async (url) => {
+  const renderCart = async () => {
     try {
-      fetch(url)
-        .then((res) => {
-          if (!res.ok) {
-            throw Error('Error');
-          }
-          return res.json();
-        })
-        .then((data) => {
-          renderCart(data);
-        });
+      const res = await fetch(methods.cart);
+      const data = await res.json();
+
+      cartList.innerHTML = '';
+
+      checkEmplyCart(data);
+
+      data.forEach((item) => {
+        const cartItem = element('li', ['cart__item'], item.id);
+
+        cartItem.innerHTML = `
+              <div class="cart__item-row">
+                <img width="120" height="120" src="${item.images}" alt="">
+                <div>
+                  <span class="cart__title">${item.name}</span>
+                  <p class="cart__price">${item.price}</p>
+                  <div class='cart__total-item'>
+                    <button data-id='plus' class='cart__plus'>+</button>
+                    <span class='cart__count'>${item.count}</span>
+                    <button data-id='minus' class='cart__minus'>-</button>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <img class='cart__remove' data-id='remove' width="25" height="25" src="${iconRemove}" alt="">
+              </div>
+            `;
+
+        cartList.insertAdjacentElement('beforeend', cartItem);
+        updateCartTotal();
+      });
     } catch (error) {
-      console.log('Error:', error);
+      console.log('Error', error);
     }
   };
 
@@ -160,6 +193,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const name = parentNode.querySelector('.card__name').textContent;
         const price = parentNode.querySelector('.card__price').textContent;
         const images = parentNode.querySelector('.card__images').src;
+
         const count = 1;
 
         const newItems = {
@@ -177,7 +211,7 @@ window.addEventListener('DOMContentLoaded', () => {
             item.id === id ? { ...item, count: item.count + 1 } : item
           );
         } else {
-          await fetch(requestUrlCart, {
+          await fetch(methods.cart, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -193,10 +227,64 @@ window.addEventListener('DOMContentLoaded', () => {
             })
             .then((data) => {
               cartData.push(data);
-              // add cart
-              renderCart(cartData);
             });
+
+          // add cart
+          renderCart();
         }
+      }
+    } catch (error) {
+      console.log('Error:', error);
+    }
+  };
+
+  const updateCartCount = async (event) => {
+    try {
+      if (event.target.dataset.id === 'plus') {
+        const parentNode = event.target.closest('.cart__item');
+        const id = parentNode.id;
+        const cartCount = parentNode.querySelector('.cart__count');
+
+        const items = cartData.find((item) => item.id === id);
+
+        await fetch(`${methods.cart}/${items.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ count: items.count + 1 }),
+        })
+          .then((res) => res.json())
+          .then(() => {
+            cartCount.innerHTML = ++items.count;
+          });
+
+        updateCartTotal();
+      }
+
+      if (event.target.dataset.id === 'minus') {
+        const parentNode = event.target.closest('.cart__item');
+        const id = parentNode.id;
+        const cartCount = parentNode.querySelector('.cart__count');
+
+        const items = cartData.find((item) => item.id === id);
+
+        await fetch(`${methods.cart}/${items.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ count: items.count - 1 }),
+        })
+          .then((res) => {
+            return res.json();
+          })
+          .then(() => {
+            cartCount.innerHTML =
+              items.count === 1 ? (items.count = 1) : (items.count -= 1);
+          });
+
+        updateCartTotal();
       }
     } catch (error) {
       console.log('Error:', error);
@@ -211,7 +299,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         cartData = cartData.filter((cart) => cart.id !== id);
 
-        await fetch(`${requestUrlCart}/${id}`, {
+        await fetch(`${methods.cart}/${id}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -219,16 +307,20 @@ window.addEventListener('DOMContentLoaded', () => {
         });
 
         parentNode.remove();
+        checkEmplyCart(cartData);
+        updateCartTotal();
       }
     } catch (error) {
       console.log('Error:', error);
     }
   };
 
+  getDataPage(renderDetailsPage, 'id', hash);
+  renderCart();
+
   cardList.addEventListener('click', onAddToCart);
   cartList.addEventListener('click', onRemoveCart);
-  details.addEventListener('click', onAddToCart);
+  cartList.addEventListener('click', updateCartCount);
 
-  fetchCart(requestUrlCart);
   // Clear cart
 });
