@@ -33,13 +33,5 @@
       "description": "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit..."
     }
   ],
-  "cart": [
-    {
-      "id": "2",
-      "name": "Smart Galaxy Watch 3",
-      "price": "$ 199.00 USD",
-      "images": "http://localhost:9000/d152bde324f43ab287d1.png",
-      "count": 1
-    }
-  ]
+  "cart": []
 }
