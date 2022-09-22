@@ -19,3 +19,8 @@
 + Чтобы запустить приложение ``npm start``
 + Чтобы собрать приложение ``npm run build``
 + Чтобы запустить сервер ``npm run server``
+
+## Сервера на которых приложения работает
+
++ npm start (http://localhost:9000)
++ npm run server (http://localhost:3001)
