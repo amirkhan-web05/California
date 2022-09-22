@@ -22,5 +22,5 @@
 
 ## Сервера на которых приложения работает
 
-+ npm start (http://localhost:9000)
-+ npm run server (http://localhost:3001)
++ ``npm start`` (http://localhost:9000)
++ ``npm run server`` (http://localhost:3001)
